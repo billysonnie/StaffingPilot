@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StaffingPilot - WFM Coverage Visualizer</title>
+<meta name="description" content="Turn call volume and staffing numbers into coverage charts and Erlang C staffing recommendations. Demo data only.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <h1>StaffingPilot</h1>
+    <p class="sub">Coverage visualizer for workforce management. All data on this page is fictional demo data for the imaginary "Northside Contact Center".</p>
+  </header>
+
+  <section class="controls" aria-label="Scenario controls">
+    <label>Service level target
+      <select id="slTarget">
+        <option value="0.8" selected>80% in 20s</option>
+        <option value="0.9">90% in 20s</option>
+        <option value="0.7">70% in 30s</option>
+      </select>
+    </label>
+    <label>Shrinkage
+      <select id="shrinkage">
+        <option value="0.30" selected>30%</option>
+        <option value="0.20">20%</option>
+        <option value="0.35">35%</option>
+      </select>
+    </label>
+    <label>Average handle time
+      <select id="aht">
+        <option value="360" selected>6:00</option>
+        <option value="300">5:00</option>
+        <option value="420">7:00</option>
+      </select>
+    </label>
+  </section>
+
+  <section class="cards" aria-label="Summary">
+    <div class="card"><span class="k">Peak agents required (model)</span><span class="v" id="peakNeed">-</span></div>
+    <div class="card"><span class="k">Peak agents scheduled</span><span class="v" id="peakSched">-</span></div>
+    <div class="card"><span class="k">Worst interval gap</span><span class="v" id="worstGap">-</span></div>
+    <div class="card"><span class="k">Time understaffed</span><span class="v" id="underHours">-</span></div>
+  </section>
+
+  <section class="chartBox">
+    <div class="legend">
+      <span><i class="sw need"></i>Required (Erlang C)</span>
+      <span><i class="sw sched"></i>Scheduled</span>
+      <span><i class="sw gap"></i>Understaffed interval</span>
+    </div>
+    <div class="chartScroll"><svg id="chart" viewBox="0 0 960 360" role="img" aria-label="Required versus scheduled agents by interval"></svg></div>
+    <p class="axisNote">Half-hour intervals, 8:00-20:00. Required agents include the selected shrinkage allowance.</p>
+  </section>
+
+  <section class="notes">
+    <h2>How it works</h2>
+    <p>Each interval's call volume and handle time become a traffic load in Erlangs. The Erlang C formula gives the smallest agent count whose modeled service level meets the target, then shrinkage (breaks, training, absence) is added on top. The scheduled line comes from the demo shift plan in <code>data.js</code>.</p>
+    <h2>Model limitations</h2>
+    <p>Erlang C assumes calls arrive randomly (Poisson), handle times vary exponentially, callers never hang up, and each interval is steady-state. Real contact centers break all of these at times. Treat the output as an illustrative planning estimate, not an operational staffing guarantee, and sanity-check it against your actual intraday reports. "Time understaffed" is how long the schedule falls short, not agent-hours missing.</p>
+    <p class="fine">Fictional demo project. No real company, customer, or employee data.</p>
+  </section>
+</main>
+<script src="erlang.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
